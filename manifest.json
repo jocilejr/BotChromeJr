@@ -6,7 +6,8 @@
   "version": "7.4.2",
   "description": "Gerencie leads, mensagens e vendas direto do WhatsApp com praticidade e agilidade.",
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background.js",
+    "type": "module"
   },
   "action": {
     "default_icon": "label/icons/icon.png"
