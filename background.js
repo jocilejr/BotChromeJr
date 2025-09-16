@@ -1,13 +1,40 @@
-import { ensureRecurringAlarms, registerAlarmHandlers } from "./alarms.js";
-import { ensureWhatsAppStatusListeners, openExtensionTab, openOrReloadWhatsAppTab } from "./tabs.js";
+update-chrome.storage.local.get-behavior
+function n(e, t, o) {
+  chrome.tabs.query({ url: e }, function(s) {
+    s.length > 0 && s.forEach((a) => {
+      chrome.tabs.sendMessage(a.id, { action: t, dados: o });
+    });
+  });
+}
+async function h(e, t = null) {
+  return new Promise((o) => {
+    chrome.storage.local.get([e], function(s) {
+      if (chrome.runtime.lastError) {
+        console.error(`Erro ao obter "${e}" do storage local`, chrome.runtime.lastError);
+        o(t);
+        return;
+      }
+      const a = s && Object.prototype.hasOwnProperty.call(s, e) ? s[e] : void 0;
+      o(a === void 0 ? t : a);
+    });
+  });
+}
+function d(e) {
+  const t = new Date(e), o = /* @__PURE__ */ new Date(), s = t.getTime() - o.getTime();
+  return s <= 12e4 || s < 0;
+}
+async function f() {
+  const i = await h("notifications", []), e = Array.isArray(i) ? i : [], t = [], o = [];
+  let s = 0;
+  for (const a of e) {
+    if (!a || typeof a != "object")
+      continue;
+    !a.timeOut && d(`${a.date}T${a.time}`) && (a.timeOut = !0, o.push(a));
+    a.timeOut && !a.read && s++;
+    t.push(a);
+  }
+  n("https://web.whatsapp.com/*", "Update_Notificação", { update: t, dispart: o, tam: s });
 
-function getTomorrowDate() {
-  const tomorrow = /* @__PURE__ */ new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  const year = tomorrow.getFullYear();
-  const month = String(tomorrow.getMonth() + 1).padStart(2, "0");
-  const day = String(tomorrow.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
 }
 
 const DEFAULT_BACKUP_CONFIGURATION = {
