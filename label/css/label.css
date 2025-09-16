@@ -1,0 +1,17 @@
+
+
+:root {
+    --primaria: #4AB270;
+    --secundaria: #1E8F60;
+    --terciaria: #BBEBA4;
+
+    --letra: #ffffff;
+}
+
+.dark {
+    --primaria: #4AB270;
+    --secundaria: #1E8F60;
+    --terciaria: #BBEBA4;
+
+    --letra: #ffffff;
+}
