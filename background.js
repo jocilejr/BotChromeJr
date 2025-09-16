@@ -5,10 +5,16 @@ function n(e, t, o) {
     });
   });
 }
-async function h(e) {
-  return new Promise((t, o) => {
+async function h(e, t = null) {
+  return new Promise((o) => {
     chrome.storage.local.get([e], function(s) {
-      s[e] === void 0 ? o() : t(s[e]);
+      if (chrome.runtime.lastError) {
+        console.error(`Erro ao obter "${e}" do storage local`, chrome.runtime.lastError);
+        o(t);
+        return;
+      }
+      const a = s && Object.prototype.hasOwnProperty.call(s, e) ? s[e] : void 0;
+      o(a === void 0 ? t : a);
     });
   });
 }
@@ -17,10 +23,15 @@ function d(e) {
   return s <= 12e4 || s < 0;
 }
 async function f() {
-  const e = await h("notifications"), t = [], o = [];
+  const i = await h("notifications", []), e = Array.isArray(i) ? i : [], t = [], o = [];
   let s = 0;
-  for (let a of e)
-    !a.timeOut && d(`${a.date}T${a.time}`) && (a.timeOut = !0, o.push(a)), a.timeOut && !a.read && s++, t.push(a);
+  for (const a of e) {
+    if (!a || typeof a != "object")
+      continue;
+    !a.timeOut && d(`${a.date}T${a.time}`) && (a.timeOut = !0, o.push(a));
+    a.timeOut && !a.read && s++;
+    t.push(a);
+  }
   n("https://web.whatsapp.com/*", "Update_Notificação", { update: t, dispart: o, tam: s });
 }
 const w = {
